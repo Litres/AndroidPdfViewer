@@ -83,7 +83,10 @@ public class PageSizeCalculator {
             default:
                 optimalMaxWidthPageSize = fitWidth(originalMaxWidthPageSize, viewSize.getWidth());
                 widthRatio = optimalMaxWidthPageSize.getWidth() / originalMaxWidthPageSize.getWidth();
-                optimalMaxHeightPageSize = fitWidth(originalMaxHeightPageSize, originalMaxHeightPageSize.getWidth() * widthRatio);
+                final SizeF newPageSize = fitWidth(originalMaxHeightPageSize, originalMaxHeightPageSize.getWidth() * widthRatio);
+                if (this.optimalMaxHeightPageSize == null || newPageSize.getHeight() > this.optimalMaxHeightPageSize.getHeight()) {
+                    this.optimalMaxHeightPageSize = newPageSize;
+                }
                 break;
         }
     }

@@ -187,6 +187,8 @@ public class PDFView extends RelativeLayout {
 
     private boolean pageSnap = true;
 
+    public float defaultOffset;
+
     /** Pdfium core for loading and rendering PDFs */
     private PdfiumCore pdfiumCore;
 
@@ -498,7 +500,7 @@ public class PDFView extends RelativeLayout {
             relativeCenterPointInStripYOffset = centerPointInStripYOffset / pdfFile.getDocLen(zoom);
         }else {
             relativeCenterPointInStripXOffset = centerPointInStripXOffset / pdfFile.getDocLen(zoom);
-            relativeCenterPointInStripYOffset = centerPointInStripYOffset / pdfFile.getMaxPageHeight();
+            relativeCenterPointInStripYOffset = centerPointInStripYOffset / pdfFile.getPageSize(currentPage).getHeight();
         }
 
         animationManager.stopAll();
@@ -509,7 +511,7 @@ public class PDFView extends RelativeLayout {
             currentYOffset = -relativeCenterPointInStripYOffset * pdfFile.getDocLen(zoom) + h * 0.5f ;
         }else {
             currentXOffset = -relativeCenterPointInStripXOffset * pdfFile.getDocLen(zoom) + w * 0.5f;
-            currentYOffset = -relativeCenterPointInStripYOffset * pdfFile.getMaxPageHeight() + h * 0.5f;
+            currentYOffset = -relativeCenterPointInStripYOffset * pdfFile.getPageSize(currentPage).getHeight() + h * 0.5f;
         }
         moveTo(currentXOffset,currentYOffset);
         loadPageByOffset();
@@ -857,13 +859,16 @@ public class PDFView extends RelativeLayout {
         } else {
             // Check Y offset
             float scaledPageHeight = toCurrentScale(pdfFile.getMaxPageHeight());
-            if (scaledPageHeight < getHeight()) {
+            if (scaledPageHeight < getHeight() && defaultOffset == 0.0f) {
                 offsetY = getHeight() / 2 - scaledPageHeight / 2;
+                if (defaultOffset == 0.0f && currentYOffset == 0.0f) {
+                    defaultOffset = offsetY;
+                }
             } else {
-                if (offsetY > 0) {
-                    offsetY = 0;
-                } else if (offsetY + scaledPageHeight < getHeight()) {
-                    offsetY = getHeight() - scaledPageHeight;
+                if (offsetY - toCurrentScale(defaultOffset) > 0) {
+                    offsetY = toCurrentScale(defaultOffset);
+                } else if (offsetY + (scaledPageHeight +  toCurrentScale(defaultOffset)) < getHeight()) {
+                    offsetY = getHeight() - scaledPageHeight - toCurrentScale(defaultOffset);
                 }
             }
 

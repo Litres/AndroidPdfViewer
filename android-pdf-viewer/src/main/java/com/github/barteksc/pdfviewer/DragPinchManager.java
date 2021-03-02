@@ -227,7 +227,7 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         }
 
         animationManager.startFlingAnimation(xOffset, yOffset, (int) (velocityX), (int) (velocityY),
-                (int) minX, 0, (int) minY, 0);
+                (int) minX, 0, (int) minY - Math.round(pdfView.toCurrentScale(pdfView.defaultOffset)), Math.round(pdfView.toCurrentScale(pdfView.defaultOffset)));
         return true;
     }
 
