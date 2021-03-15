@@ -1268,6 +1268,18 @@ public class PDFView extends RelativeLayout {
         return renderDuringScale;
     }
 
+    /**
+     * Invoke on changing view height to calculate new default offset
+     * **/
+    public void calculateDefaultOffset() {
+        float scaledPageHeight = toCurrentScale(pdfFile.getMaxPageHeight());
+        if (scaledPageHeight < getHeight()) {
+            if (defaultOffset == 0.0f) {
+                defaultOffset = getHeight() / 2.0f - scaledPageHeight / 2;
+            }
+        }
+    }
+
     /** Returns null if document is not loaded */
     public PdfDocument.Meta getDocumentMeta() {
         if (pdfFile == null) {
